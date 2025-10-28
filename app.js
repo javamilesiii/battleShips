@@ -1,78 +1,33 @@
-const gameboard = document.querySelector('#gameboard')
-const player = document.querySelector('#player')
-const displayInfo = document.querySelector('#info-display')
-const displayShips = document.querySelector('#shipsBoard')
+const flipButton = document.querySelector('#flip-button');
+const gamesBoardContainer = document.querySelector('#gamesboard-container');
+const optionContainer = document.querySelector('#option-container');
 
-const availableShips = [
-    smallShip, mediumShip, mediumShip, largeShip, giantShip
-]
-
-const startBoard = [
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", "",
-    "", "", "", "", "", "", "", "", ""
-]
-
-function createBoard() {
-    startBoard.forEach((cell, i) => {
-        const cellElement = document.createElement('div')
-        cellElement.classList.add('cell')
-        cellElement.setAttribute('cell-id', i)
-        cellElement.innerHTML = cell
-        cellElement.addEventListener('dragover', (e) => {
-            e.preventDefault()
-        })
-        cellElement.addEventListener('dragstart', (e) => {
-            draggedShip = e.target
-        })
-        cellElement.addEventListener('drop', dropEvent)
-        gameboard.appendChild(cellElement)
-    })
-    availableShips.forEach((ship) => {
-        const shipElement = document.createElement('div')
-        shipElement.classList.add('ship')
-        shipElement.innerHTML = ship
-        shipElement.draggable
-        /*shipElement.forEach((part, i) => {
-            part.setAttribute('part-id', i)
-        })*/
-        shipElement.setAttribute('ship-length', shipElement.children.length)
-        displayShips.appendChild(shipElement)
-    })
+let angle = 0
+function flip() {
+    const optionShips = Array.from(optionContainer.children)
+    angle = angle === 0 ? 90 : 0
+    optionShips.forEach(ship => ship.style.transform = `rotate(${angle}deg)`)
 }
 
-createBoard()
+const width = 10
 
-let draggedShip
+function createBoard(color, user) {
 
-const ships = document.querySelectorAll('.ship')
-ships.forEach(ship => {
-    console.log(ship)
-    ship.addEventListener('dragstart', (e) => {
-        console.log(e.target)
-            console.log(e.target.getAttribute('ship-length'))
-            draggedShip = e.target
-        }
-    )
-    /*shipCell.addEventListener('dragover', (e) => {
-        e.preventDefault()
-        }
-    )*/
+    const gameBoardContainer = document.createElement('div')
+    gameBoardContainer.classList.add('game-board')
+    gameBoardContainer.style.backgroundColor = color
+    gameBoardContainer.id = user
 
-})
-displayShips.addEventListener('drop', (e) => {
-    e.stopPropagation()
-    e.target.appendChild(draggedShip)
-})
+    for (let i = 0; i < width * width; i++) {
+        const block = document.createElement('div')
+        block.classList.add('block')
+        block.id = i
+        gameBoardContainer.append(block)
+    }
 
-function dropEvent(e) {
-    console.log(e.target)
-    e.stopPropagation()
-    e.target.appendChild(draggedShip)
+    gamesBoardContainer.append(gameBoardContainer)
 }
+createBoard('yellow', 'player')
+createBoard('pink', 'computer')
+
+flipButton.addEventListener('click', flip);
