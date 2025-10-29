@@ -49,13 +49,16 @@ const battleship = new Ship('battleship', 4)
 const carrier = new Ship('carrier', 5)
 
 const ships = [destroyer, submarine, cruiser, battleship, carrier]
+let notDropped
 
-function addShipPiece(ship) {
-    const allBoardBlocks = document.querySelectorAll('#computer div')
-    let isHorizontal = Math.random() < 0.5
+function addShipPiece(user, ship, startId) {
+    const allBoardBlocks = document.querySelectorAll(`#${user} div`)
+    let isHorizontal = user === 'player' ? angle === 0 : Math.random() < 0.5
     let randomStartIndex = Math.floor(Math.random() * allBoardBlocks.length)
 
-    let validStart = isHorizontal ? randomStartIndex <= width * width - ship.length ? randomStartIndex : width * width - ship.length : randomStartIndex <= width * width - width * ship.length ? randomStartIndex : randomStartIndex - ship.length * width + width
+    let startIndex = startId ? startId : randomStartIndex
+
+    let validStart = isHorizontal ? startIndex <= width * width - ship.length ? startIndex : width * width - ship.length : startIndex <= width * width - width * ship.length ? startIndex : startIndex - ship.length * width + width
 
     let shipBlocks = []
 
@@ -83,8 +86,36 @@ function addShipPiece(ship) {
             block.classList.add('taken')
         })
     } else {
-        addShipPiece(ship)
+        user === 'computer' ? addShipPiece('computer', ship) : notDropped = true
     }
 }
+ships.forEach(ship => addShipPiece('computer', ship))
 
-ships.forEach(ship => addShipPiece(ship))
+// Drag and Drop Ships
+let draggedShip
+const optionShips = Array.from(optionContainer.children)
+optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragStart))
+
+const allPlayerBlocks = document.querySelectorAll('#player div')
+allPlayerBlocks.forEach(playerBlock => {
+    playerBlock.addEventListener('dragover', dragOver)
+    playerBlock.addEventListener('drop', dropShip)
+})
+
+function dragStart(e) {
+    notDropped = false
+    draggedShip = e.target
+}
+
+function dragOver(e) {
+    e.preventDefault()
+}
+
+function dropShip(e) {
+    const startId = e.target.id
+    const ship = ships[draggedShip.id]
+    addShipPiece('player', ship, startId)
+    if (!notDropped) {
+        draggedShip.remove()
+    }
+}
