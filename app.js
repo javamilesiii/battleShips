@@ -6,22 +6,17 @@ const infoDisplay = document.querySelector('#info');
 const turnDisplay = document.querySelector('#turn-display');
 
 let angle = 0
-
-function flip() {
-    const optionShips = Array.from(optionContainer.children)
-    angle = angle === 0 ? 90 : 0
-    optionShips.forEach(ship => ship.style.transform = `rotate(${angle}deg)`)
-}
-
-flipButton.addEventListener('click', flip);
-
 const width = 10
 
-function createBoard(color, user) {
+function flip() {
+    angle = angle === 0 ? 90 : 0
+    Array.from(optionContainer.children).forEach(ship => ship.style.transform = `rotate(${angle}deg)`)
+}
+flipButton.addEventListener('click', flip);
 
+function createBoard(user) {
     const gameBoardContainer = document.createElement('div')
     gameBoardContainer.classList.add('game-board')
-    gameBoardContainer.style.backgroundColor = color
     gameBoardContainer.id = user
 
     for (let i = 0; i < width * width; i++) {
@@ -30,12 +25,11 @@ function createBoard(color, user) {
         block.id = i
         gameBoardContainer.append(block)
     }
-
     gamesBoardContainer.append(gameBoardContainer)
 }
 
-createBoard('yellow', 'player')
-createBoard('pink', 'computer')
+createBoard('player')
+createBoard('computer')
 
 class Ship {
     constructor(name, length) {
@@ -43,7 +37,6 @@ class Ship {
         this.length = length
     }
 }
-
 
 const destroyer = new Ship('destroyer', 2)
 const submarine = new Ship('submarine', 3)
@@ -96,11 +89,7 @@ function addShipPiece(user, ship, startId) {
         notDropped = false
         return true
     } else {
-        if (user === 'computer') {
-            addShipPiece('computer', ship)
-        } else {
-            notDropped = true
-        }
+        user === 'computer' ? addShipPiece('computer', ship) : notDropped = true
         return false
     }
 }
@@ -138,7 +127,7 @@ function dropShip(e) {
 
     const placed = addShipPiece('player', ship, startId)
 
-    if (placed) {
+    if (placed && !notDropped) {
         draggedShip.removeEventListener('dragstart', dragStart)
         draggedShip.remove()
         draggedShip = null
@@ -247,14 +236,13 @@ function checkScore(user, userHits, userSunkShips) {
     function checkShip(shipName, shipLength) {
         if (userHits.filter(hit => hit === shipName).length === shipLength) {
             if (user === 'player') {
-                infoDisplay.textContent = `${user} sunk the computer's ${shipName}!`
+                infoDisplay.textContent = `${user.toUpperCase()} sunk the computer's ${shipName}!`
                 playerHits = userHits.filter(hit => hit !== shipName)
             } else if (user === 'computer') {
-                infoDisplay.textContent = `${user} defeated the player's ${shipName}!`
+                infoDisplay.textContent = `${user.toUpperCase()} defeated the player's ${shipName}!`
                 computerHits = userHits.filter(hit => hit !== shipName)
             }
             userSunkShips.push(shipName)
-
         }
     }
     checkShip('destroyer', 2)
