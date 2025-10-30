@@ -12,6 +12,7 @@ function flip() {
     angle = angle === 0 ? 90 : 0
     Array.from(optionContainer.children).forEach(ship => ship.style.transform = `rotate(${angle}deg)`)
 }
+
 flipButton.addEventListener('click', flip);
 
 function createBoard(user) {
@@ -245,6 +246,7 @@ function checkScore(user, userHits, userSunkShips) {
             userSunkShips.push(shipName)
         }
     }
+
     checkShip('destroyer', 2)
     checkShip('submarine', 3)
     checkShip('cruiser', 3)

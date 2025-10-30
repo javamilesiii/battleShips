@@ -117,7 +117,7 @@ body {
 
 #option-container {
     width: 40%;
-    height: 5rem;
+    height: 6rem;
     background-color: var(--color-background-mute);
     display: flex;
     align-items: center;
